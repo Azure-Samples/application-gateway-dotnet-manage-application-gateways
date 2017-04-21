@@ -4,7 +4,7 @@ platforms: .Net
 author: selvasingh
 ---
 
-#Getting Started with Application - Manage Application Gateway - in .Net #
+# Getting Started with Application - Manage Application Gateway - in .Net #
 
           Azure network sample for managing application gateways.
            - CREATE an application gateway for load balancing

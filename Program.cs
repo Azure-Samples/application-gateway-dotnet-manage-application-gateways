@@ -5,9 +5,9 @@ using Microsoft.Azure.Management.Compute.Fluent;
 using Microsoft.Azure.Management.Compute.Fluent.Models;
 using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.Network.Fluent;
-using Microsoft.Azure.Management.Resource.Fluent;
-using Microsoft.Azure.Management.Resource.Fluent.Core;
-using Microsoft.Azure.Management.Resource.Fluent.Core.ResourceActions;
+using Microsoft.Azure.Management.ResourceManager.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core.ResourceActions;
 using Microsoft.Azure.Management.Samples.Common;
 using System;
 using System.Collections.Generic;
@@ -21,8 +21,8 @@ namespace ManageApplicationGateway
     {
         private static readonly string UserName = "tirekicker";
         private static readonly string SshKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCfSPC2K7LZcFKEO+/t3dzmQYtrJFZNxOsbVgOVKietqHyvmYGHEC0J2wPdAqQ/63g/hhAEFRoyehM+rbeDri4txB3YFfnOK58jqdkyXzupWqXzOrlKY4Wz9SKjjN765+dqUITjKRIaAip1Ri137szRg71WnrmdP3SphTRlCx1Bk2nXqWPsclbRDCiZeF8QOTi4JqbmJyK5+0UqhqYRduun8ylAwKKQJ1NJt85sYIHn9f1Rfr6Tq2zS0wZ7DHbZL+zB5rSlAr8QyUdg/GQD+cmSs6LvPJKL78d6hMGk84ARtFo4A79ovwX/Fj01znDQkU6nJildfkaolH2rWFG/qttD azjava@javalib.Com";
-        private static readonly string SslCertificatePfxPath = "myTest._pfx"; // Relative to project root directory by default
-        private static readonly string SslCertificatePfxPath2 = "myTest2._pfx"; // Relative to project root directory by default
+        private static readonly string SslCertificatePfxPath = "NetworkTestCertificate1.pfx"; // Relative to project root directory by default
+        private static readonly string SslCertificatePfxPath2 = "NetworkTestCertificate2.pfx"; // Relative to project root directory by default
         private const int BackendPools = 2;
         private const int VMCountInAPool = 4;
 
@@ -99,7 +99,7 @@ namespace ManageApplicationGateway
                 // Create a public IP address for the Application Gateway
                 Utilities.Log("Creating a public IP address for the application gateway ...");
 
-                var publicIpAddress = azure.PublicIpAddresses.Define(pipName)
+                var publicIPAddress = azure.PublicIPAddresses.Define(pipName)
                         .WithRegion(Region.USEast)
                         .WithExistingResourceGroup(rgName)
                         .Create().Refresh();
@@ -107,7 +107,7 @@ namespace ManageApplicationGateway
                 Utilities.Log("Created a public IP address");
 
                 // Print the public IP details
-                Utilities.PrintIpAddress(publicIpAddress);
+                Utilities.PrintIPAddress(publicIPAddress);
 
                 //=============================================================
                 // Create backend pools
@@ -142,13 +142,13 @@ namespace ManageApplicationGateway
                     {
                         //=============================================================
                         // Create 1 public IP address creatable
-                        var publicIpAddressCreatable = azure.PublicIpAddresses
+                        var publicIPAddressCreatable = azure.PublicIPAddresses
                                 .Define(string.Format("{0}-{1}", linuxVMNamePrefix, j))
                                 .WithRegion(Regions[i])
                                 .WithExistingResourceGroup(resourceGroup)
                                 .WithLeafDomainLabel(string.Format("{0}-{1}", linuxVMNamePrefix, j));
 
-                        PublicIpCreatableKeys[i, j] = publicIpAddressCreatable.Key;
+                        PublicIpCreatableKeys[i, j] = publicIPAddressCreatable.Key;
 
                         //=============================================================
                         // Create 1 virtual machine creatable
@@ -156,8 +156,8 @@ namespace ManageApplicationGateway
                                 .WithRegion(Regions[i])
                                 .WithExistingResourceGroup(resourceGroup)
                                 .WithNewPrimaryNetwork(networkCreatable)
-                                .WithPrimaryPrivateIpAddressDynamic()
-                                .WithNewPrimaryPublicIpAddress(publicIpAddressCreatable)
+                                .WithPrimaryPrivateIPAddressDynamic()
+                                .WithNewPrimaryPublicIPAddress(publicIPAddressCreatable)
                                 .WithPopularLinuxImage(KnownLinuxVirtualMachineImage.UbuntuServer16_04_Lts)
                                 .WithRootUsername(UserName)
                                 .WithSsh(SshKey)
@@ -196,10 +196,10 @@ namespace ManageApplicationGateway
                 {
                     for (var j = 0; j < VMCountInAPool; j++)
                     {
-                        var pip = (IPublicIpAddress)virtualMachines
+                        var pip = (IPublicIPAddress)virtualMachines
                                 .CreatedRelatedResource(PublicIpCreatableKeys[i, j]);
                         pip.Refresh();
-                        IPAddresses[i, j] = pip.IpAddress;
+                        IPAddresses[i, j] = pip.IPAddress;
                         Utilities.Log("[backend pool ="
                            + i
                            + "][vm = "
@@ -227,25 +227,27 @@ namespace ManageApplicationGateway
                             .FromPublicFrontend()
                             .FromFrontendHttpPort(80)
                             .ToBackendHttpPort(8080)
-                            .ToBackendIpAddress(IPAddresses[0, 0])
-                            .ToBackendIpAddress(IPAddresses[0, 1])
-                            .ToBackendIpAddress(IPAddresses[0, 2])
-                            .ToBackendIpAddress(IPAddresses[0, 3])
+                            .ToBackendIPAddress(IPAddresses[0, 0])
+                            .ToBackendIPAddress(IPAddresses[0, 1])
+                            .ToBackendIPAddress(IPAddresses[0, 2])
+                            .ToBackendIPAddress(IPAddresses[0, 3])
                             .Attach()
                         
                             // Request routing rule for HTTPS from public 443 to public 8080
                         .DefineRequestRoutingRule("HTTPs-443-to-8080")
                             .FromPublicFrontend()
                             .FromFrontendHttpsPort(443)
-                            .WithSslCertificateFromPfxFile(new FileInfo(SslCertificatePfxPath))
+                            .WithSslCertificateFromPfxFile(
+                                new FileInfo(
+                                    Utilities.GetCertificatePath(SslCertificatePfxPath)))
                             .WithSslCertificatePassword("Abc123")
                             .ToBackendHttpPort(8080)
-                            .ToBackendIpAddress(IPAddresses[1, 0])
-                            .ToBackendIpAddress(IPAddresses[1, 1])
-                            .ToBackendIpAddress(IPAddresses[1, 2])
-                            .ToBackendIpAddress(IPAddresses[1, 3])
+                            .ToBackendIPAddress(IPAddresses[1, 0])
+                            .ToBackendIPAddress(IPAddresses[1, 1])
+                            .ToBackendIPAddress(IPAddresses[1, 2])
+                            .ToBackendIPAddress(IPAddresses[1, 3])
                             .Attach()
-                        .WithExistingPublicIpAddress(publicIpAddress)
+                        .WithExistingPublicIPAddress(publicIPAddress)
                         .Create();
 
                 t.Stop();
@@ -268,13 +270,15 @@ namespace ManageApplicationGateway
                         .DefineRequestRoutingRule("HTTPs-1443-to-8080")
                             .FromPublicFrontend()
                             .FromFrontendHttpsPort(1443)
-                            .WithSslCertificateFromPfxFile(new FileInfo(SslCertificatePfxPath2))
+                            .WithSslCertificateFromPfxFile(
+                                new FileInfo(
+                                    Utilities.GetCertificatePath(SslCertificatePfxPath2)))
                             .WithSslCertificatePassword("Abc123")
                             .ToBackendHttpPort(8080)
-                            .ToBackendIpAddress(IPAddresses[0, 0])
-                            .ToBackendIpAddress(IPAddresses[0, 1])
-                            .ToBackendIpAddress(IPAddresses[0, 2])
-                            .ToBackendIpAddress(IPAddresses[0, 3])
+                            .ToBackendIPAddress(IPAddresses[0, 0])
+                            .ToBackendIPAddress(IPAddresses[0, 1])
+                            .ToBackendIPAddress(IPAddresses[0, 2])
+                            .ToBackendIPAddress(IPAddresses[0, 3])
                             .WithHostName("www.contoso.com")
                             .WithCookieBasedAffinity()
                             .Attach()
@@ -314,7 +318,7 @@ namespace ManageApplicationGateway
 
                 var azure = Azure
                     .Configure()
-                    .WithLogLevel(HttpLoggingDelegatingHandler.Level.BASIC)
+                    .WithLogLevel(HttpLoggingDelegatingHandler.Level.Basic)
                     .Authenticate(credentials)
                     .WithDefaultSubscription();
 
