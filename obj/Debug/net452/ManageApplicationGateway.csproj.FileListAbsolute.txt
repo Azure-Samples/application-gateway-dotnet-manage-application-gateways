@@ -1,4 +1,0 @@
-C:\Sources\dotnet-samples\application-gateway-dotnet-manage-application-gateways\bin\Debug\net452\ManageApplicationGateway.runtimeconfig.json
-C:\Sources\dotnet-samples\application-gateway-dotnet-manage-application-gateways\bin\Debug\net452\ManageApplicationGateway.runtimeconfig.dev.json
-C:\Sources\dotnet-samples\application-gateway-dotnet-manage-application-gateways\obj\Debug\net452\ManageApplicationGateway.csproj.ManageApplicationGateway.exe.config
-C:\Sources\dotnet-samples\application-gateway-dotnet-manage-application-gateways\obj\Debug\net452\ManageApplicationGateway.csproj.CoreCompileInputs.cache

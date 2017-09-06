@@ -7,10 +7,13 @@ author: selvasingh
 # Getting Started with Application - Manage Application Gateway - in .Net #
 
           Azure network sample for managing application gateways.
+         
            - CREATE an application gateway for load balancing
              HTTP/HTTPS requests to backend server pools of virtual machines
+         
              This application gateway serves traffic for multiple
              domain names
+         
              Routing Rule 1
              Hostname 1 = None
              Backend server pool 1 = 4 virtual machines with IP addresses
@@ -19,6 +22,7 @@ author: selvasingh
              Listener 1 = HTTP
              Routing rule 1 = HTTP listener 1 => backend server pool 1
              (round-robin load distribution)
+         
              Routing Rule 2
              Hostname 2 = None
              Backend server pool 2 = 4 virtual machines with IP addresses
@@ -27,13 +31,16 @@ author: selvasingh
              Listener 2 = HTTPS
              Routing rule 2 = HTTPS listener 2 => backend server pool 2
              (round-robin load distribution)
+         
            - MODIFY the application gateway - re-configure the Routing Rule 1 for SSL offload &
              add a host name, www.Contoso.Com
+         
              Change listener 1 from HTTP to HTTPS
              Add SSL certificate to the listener
              Update front end port 1 to HTTPS:1443
              Add a host name, www.Contoso.Com
              Enable cookie-based affinity
+         
              Modified Routing Rule 1
              Hostname 1 = www.Contoso.Com
              Backend server pool 1 = 4 virtual machines with IP addresses
@@ -42,6 +49,7 @@ author: selvasingh
              Listener 1 = HTTPS
              Routing rule 1 = HTTPS listener 1 => backend server pool 1
              (round-robin load distribution)
+         
 
 
 ## Running this Sample ##
