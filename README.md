@@ -1,7 +1,7 @@
 ---
 services: virtual-network
 platforms: dotnet
-author: selvasingh
+author: yaohaizh
 ---
 
 # Getting started on managing Application Gateways with backend pools in C# #
@@ -32,7 +32,7 @@ author: selvasingh
              Routing rule 2 = HTTPS listener 2 => backend server pool 2
              (round-robin load distribution)
          
-           - MODIFY the application gateway - re-configure the Routing Rule 1 for SSL offload &
+           - MODIFY the application gateway - re-configure the Routing Rule 1 for SSL offload and
              add a host name, www.Contoso.Com
          
              Change listener 1 from HTTP to HTTPS
@@ -56,7 +56,7 @@ author: selvasingh
 
 To run this sample:
 
-Set the environment variable `AZURE_AUTH_LOCATION` with the full path for an auth file. See [how to create an auth file](https://github.com/Azure/azure-libraries-for-java/blob/master/AUTH.md).
+Set the environment variable `AZURE_AUTH_LOCATION` with the full path for an auth file. See [how to create an auth file](https://github.com/Azure/azure-libraries-for-net/blob/master/AUTH.md).
 
     git clone https://github.com/Azure-Samples/application-gateway-dotnet-manage-application-gateways.git
 
