@@ -1,7 +1,9 @@
 ---
 page_type: sample
-languages: java
-products: azure
+languages:
+- java
+products:
+- azure
 services: virtual-network
 platforms: dotnet
 author: yaohaizh
@@ -64,9 +66,9 @@ Set the environment variable `AZURE_AUTH_LOCATION` with the full path for an aut
     git clone https://github.com/Azure-Samples/application-gateway-dotnet-manage-application-gateways.git
 
     cd application-gateway-dotnet-manage-application-gateways
-  
+
     dotnet build
-    
+
     bin\Debug\net452\ManageApplicationGateway.exe
 
 ## More information ##
