@@ -7,13 +7,11 @@ products:
 extensions:
 - services: virtual-network
 - platforms: dotnet
-description: "Azure network sample for managing application gateways."
 ---
 
-# Getting started on managing Application Gateways with backend pools in C#
+# Getting started on managing Application Gateways with backend pools in C# #
 
  Azure network sample for managing application gateways.
- 
   - CREATE an application gateway for load balancing
     HTTP/HTTPS requests to backend server pools of virtual machines
     This application gateway serves traffic for multiple
