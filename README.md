@@ -5,8 +5,8 @@ languages:
 products:
 - azure
 extensions:
-- services: virtual-network
-- platforms: dotnet
+  services: virtual-network
+  platforms: dotnet
 ---
 
 # Getting started on managing Application Gateways with backend pools in C# #
